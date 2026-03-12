@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Horror Komedi Prompt Engine PRO</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#0a0a0a;
+color:white;
+margin:0;
+padding:20px;
+}
+
+.container{
+max-width:760px;
+margin:auto;
+}
+
+h1{
+text-align:center;
+color:#ff3c3c;
+}
+
+.card{
+background:#181818;
+padding:15px;
+border-radius:12px;
+margin-bottom:15px;
+}
+
+label{
+display:block;
+margin-top:10px;
+font-size:14px;
+}
+
+input,select{
+width:100%;
+padding:10px;
+margin-top:5px;
+border-radius:8px;
+border:none;
+background:#2a2a2a;
+color:white;
+}
+
+button{
+margin-top:15px;
+padding:12px;
+border:none;
+border-radius:10px;
+background:#ff3c3c;
+color:white;
+font-weight:bold;
+width:100%;
+}
+
+button:hover{
+background:#ff2020;
+}
+
+.output{
+background:#111;
+padding:12px;
+border-radius:8px;
+margin-top:10px;
+font-size:13px;
+white-space:pre-wrap;
+}
+
+.copyBtn{
+margin-top:6px;
+background:#333;
+padding:6px;
+border-radius:6px;
+width:100%;
+}
+
+.preview{
+width:100%;
+margin-top:10px;
+border-radius:10px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>HORROR KOMEDI PROMPT ENGINE</h1>
+
+<div class="card">
+
+<label>Upload Foto Referensi Vlogger</label>
+<input type="file" id="photo">
+<img id="preview" class="preview"/>
+
+<label>Lokasi</label>
+<input id="lokasi" placeholder="contoh: rumah kosong">
+
+<label>Waktu</label>
+<select id="waktu">
+<option>malam hari</option>
+<option>tengah malam</option>
+<option>dini hari berkabut</option>
+</select>
+
+<label>Jenis Hantu</label>
+<select id="hantu">
+<option>pocong</option>
+<option>kuntilanak</option>
+<option>genderuwo</option>
+<option>tuyul</option>
+<option>wewe gombel</option>
+<option>leak bali</option>
+<option>sundel bolong</option>
+<option>faceless ghost</option>
+<option>winged monster</option>
+</select>
+
+<label>Jumlah Scene</label>
+<input type="number" id="scene" value="3" min="3">
+
+<label>Horror Intensity</label>
+<select id="intensity">
+<option>low</option>
+<option>medium</option>
+<option>high</option>
+<option>extreme</option>
+</select>
+
+<label>Batch Prompt</label>
+<input type="number" id="batch" value="1">
+
+<button onclick="generate()">Generate Prompt</button>
+
+</div>
+
+<div id="result"></div>
+
+</div>
+
+<script>
+
+const preview=document.getElementById("preview")
+document.getElementById("photo").onchange=e=>{
+preview.src=URL.createObjectURL(e.target.files[0])
+}
+
+function copyText(text){
+navigator.clipboard.writeText(text)
+alert("Copied")
+}
+
+function random(arr){
+return arr[Math.floor(Math.random()*arr.length)]
+}
+
+function camera(){
+
+let cams=[
+"handheld smartphone camera, shaky amateur recording",
+"violent handheld shake while walking",
+"panic running camera movement",
+"uneven amateur framing, accidental tilt",
+"extreme shaky found footage style"
+]
+
+return `
+camera style:
+${random(cams)}
+no stabilizer
+natural hand jitter
+raw vlog footage
+NOT cinematic
+NOT stabilized
+`
+}
+
+function comedy(){
+
+let actions=[
+"throws stones at the ghost's head",
+"hits the ghost repeatedly with a wooden stick",
+"kicks the ghost while shouting",
+"chases the ghost aggressively",
+"smacks the ghost's head with random objects"
+]
+
+return random(actions)
+}
+
+function generate(){
+
+let lokasi=document.getElementById("lokasi").value
+let waktu=document.getElementById("waktu").value
+let hantu=document.getElementById("hantu").value
+let scene=parseInt(document.getElementById("scene").value)
+let intensity=document.getElementById("intensity").value
+let batch=parseInt(document.getElementById("batch").value)
+
+let result=document.getElementById("result")
+result.innerHTML=""
+
+for(let b=1;b<=batch;b++){
+
+let cam=camera()
+
+let imgPrompt=
+
+`HORROR IMAGE PROMPT
+
+Indonesian vlogger exploring ${lokasi} at ${waktu}.
+
+The vlogger looks nervous while recording a vlog.
+
+Dark eerie environment.
+
+No ghost visible yet.
+
+${intensity} horror atmosphere.
+
+reference character based on uploaded photo.
+
+${cam}`
+
+let html=`<div class="card"><h3>Batch ${b}</h3>`
+
+html+=`<b>Prompt Gambar</b>
+<div class="output">${imgPrompt}</div>
+<button class="copyBtn" onclick='copyText(\`${imgPrompt}\`)'>COPY</button>`
+
+for(let i=1;i<=scene;i++){
+
+let text=""
+
+if(i==scene){
+
+text=
+
+`VIDEO SCENE ${i} (COMEDY CLIMAX)
+
+The ${hantu} suddenly appears clearly.
+
+The vlogger becomes angry and ${comedy()}.
+
+The ghost becomes scared and runs away.
+
+Now the vlogger chases the ghost.
+
+The ghost looks traumatized and terrified.
+
+horror comedy climax.
+
+${cam}`
+
+}else{
+
+text=
+
+`VIDEO SCENE ${i}
+
+The vlogger explores ${lokasi} at ${waktu}.
+
+Strange noises appear.
+
+The ${hantu} briefly appears in the distance.
+
+The vlogger panics and runs.
+
+The ghost begins chasing.
+
+${intensity} horror atmosphere.
+
+${cam}`
+
+}
+
+html+=`<b>Scene ${i}</b>
+<div class="output">${text}</div>
+<button class="copyBtn" onclick='copyText(\`${text}\`)'>COPY</button>`
+
+}
+
+html+=`</div>`
+
+result.innerHTML+=html
+
+}
+
+}
+
+</script>
+
+</body>
+</html>
