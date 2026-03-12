@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Horror Komedi Prompt Engine V2</title>
+<title>Horror Komedi Prompt Engine V3</title>
 
 <style>
 
@@ -88,7 +87,7 @@ border-radius:10px;
 
 <div class="container">
 
-<h1>HORROR KOMEDI PROMPT ENGINE V2</h1>
+<h1>HORROR KOMEDI PROMPT ENGINE V3</h1>
 
 <div class="card">
 
@@ -97,13 +96,14 @@ border-radius:10px;
 <img id="preview" class="preview"/>
 
 <label>Lokasi</label>
-<input id="lokasi" placeholder="contoh: hutan angker">
+<input id="lokasi" placeholder="contoh: rumah kosong angker">
 
 <label>Waktu</label>
 <select id="waktu">
-<option>malam hari</option>
-<option>tengah malam</option>
-<option>dini hari berkabut</option>
+<option>malam hari berkabut</option>
+<option>tengah malam sunyi</option>
+<option>dini hari berkabut tipis</option>
+<option>sore menjelang malam</option>
 </select>
 
 <label>Jenis Hantu</label>
@@ -125,16 +125,6 @@ border-radius:10px;
 <label>Jumlah Scene</label>
 <input type="number" id="scene" value="4" min="3">
 
-<label>Horror Intensity</label>
-<select id="intensity">
-
-<option>low</option>
-<option>medium</option>
-<option>high</option>
-<option>extreme</option>
-
-</select>
-
 <label>Batch Prompt</label>
 <input type="number" id="batch" value="1">
 
@@ -155,51 +145,45 @@ preview.src=URL.createObjectURL(e.target.files[0])
 }
 
 function copyText(text){
-
 navigator.clipboard.writeText(text)
 alert("Prompt copied")
-
 }
 
 function random(arr){
-
 return arr[Math.floor(Math.random()*arr.length)]
-
 }
 
 function camera(){
 
 let cam=[
 
-"shaky handheld smartphone vlog camera",
-
+"shaky handheld smartphone camera",
 "panic running handheld camera",
-
 "violent amateur camera shake",
-
-"sudden accidental camera pan",
-
-"camera almost dropped while running",
-
-"heavy breathing camera shake",
-
-"uneven amateur framing",
-
-"raw found footage recording",
-
-"wild shaky vlog camera",
-
-"chaotic handheld movement"
+"uneven handheld framing",
+"raw found footage camera movement",
+"heavy breathing shaky camera"
 
 ]
 
-return `camera style:
-${random(cam)}
-no stabilizer
-handheld amateur recording
-raw vlog footage
-NOT cinematic
-NOT gimbal`
+return `camera: ${random(cam)}, no stabilizer, amateur vlog recording`
+
+}
+
+function weirdSound(){
+
+let sounds=[
+
+"distant whispering",
+"dry leaves crunching nearby",
+"metal object falling somewhere",
+"low eerie humming",
+"sudden branch snapping",
+"wind blowing through empty corridor"
+
+]
+
+return random(sounds)
 
 }
 
@@ -213,13 +197,11 @@ let act=[
 
 "kicks the ghost angrily",
 
-"chases the ghost aggressively",
+"hits the ghost using a sandal",
 
-"pulls the ghost's ear",
+"throws random objects at the ghost",
 
-"hits the ghost with a sandal",
-
-"throws random objects at the ghost"
+"pulls the ghost's ear"
 
 ]
 
@@ -227,22 +209,19 @@ return random(act)
 
 }
 
-function hashtags(){
+function buildSession(textA,textB,textC=""){
+let s=`Session A (0-2s)
+${textA}
 
-return `
-
-#horror
-#hororkomedi
-#povhorror
-#ghost
-#foundfootage
-#vloghorror
-#indonesianhorror
-#scaryvideo
-#urbanlegend
+Session B (2-4s)
+${textB}
 
 `
-
+if(textC!=""){
+s+=`Session C (4-6s)
+${textC}`
+}
+return s
 }
 
 function generate(){
@@ -251,15 +230,14 @@ let lokasi=document.getElementById("lokasi").value
 let waktu=document.getElementById("waktu").value
 let hantu=document.getElementById("hantu").value
 let scene=parseInt(document.getElementById("scene").value)
-let intensity=document.getElementById("intensity").value
 let batch=parseInt(document.getElementById("batch").value)
 
 let result=document.getElementById("result")
 result.innerHTML=""
 
-for(let b=1;b<=batch;b++){
+let ghostScene=Math.floor(Math.random()*(scene-2))+2
 
-let cam=camera()
+for(let b=1;b<=batch;b++){
 
 let html=`<div class="card"><h3>Batch ${b}</h3>`
 
@@ -269,19 +247,15 @@ let img=
 
 `HORROR IMAGE PROMPT
 
-A nervous Indonesian vlogger exploring ${lokasi} at ${waktu}.
+Seorang vlogger Indonesia sedang mengeksplor ${lokasi} pada ${waktu}.
 
-The vlogger slowly records the environment.
+Suasana lokasi terasa sunyi, gelap, dan menyeramkan.
 
-The location feels eerie and quiet.
+Tidak ada hantu terlihat.
 
-No ghost visible.
+Ekspresi vlogger terlihat waspada dan sedikit gugup.
 
-${intensity} horror atmosphere.
-
-reference character based on uploaded photo.
-
-${cam}`
+referensi karakter berdasarkan foto yang diupload.`
 
 all+=img+"\n\n"
 
@@ -291,31 +265,48 @@ html+=`<b>Prompt Gambar</b>
 
 for(let i=1;i<=scene;i++){
 
+let cam=camera()
+let sound=weirdSound()
+
 let text=""
 
 if(i==1){
 
-text=`VIDEO SCENE 1 — EXPLORATION
+text=`VIDEO SCENE 1
+Durasi: 6 detik
+Lokasi: ${lokasi}
+Waktu: ${waktu}
 
-The vlogger explores ${lokasi} at ${waktu}.
+${buildSession(
 
-The environment feels tense.
+`Vlogger berjalan perlahan sambil merekam sekitar. Ekspresi wajah penasaran namun tegang. Terdengar suara ${sound}. Kamera sedikit bergoyang.`,
 
-Nothing unusual appears yet.
+`Vlogger menyorot area sekitar menggunakan kamera. Lingkungan terlihat gelap dan sepi. Suara angin dan ${sound} terdengar.`,
 
-No ghost visible.
+`Vlogger berhenti sejenak, mencoba mendengarkan suara sekitar dengan ekspresi curiga.`
+
+)}
 
 ${cam}`
 
 }
 
-else if(i==2){
+else if(i==ghostScene){
 
-text=`VIDEO SCENE 2 — GHOST APPEARANCE
+text=`VIDEO SCENE ${i} (GHOST APPEARANCE)
+Durasi: 6 detik
+Lokasi: ${lokasi}
+Waktu: ${waktu}
 
-The ${hantu} appears in the distance.
+${buildSession(
 
-The vlogger notices and becomes frightened.
+`Saat kamera menyorot ke depan, sosok ${hantu} terlihat samar di kejauhan. Vlogger terkejut dan menarik napas.`,
+
+`Sosok ${hantu} mulai bergerak perlahan mendekat. Ekspresi vlogger berubah panik.`,
+
+`Vlogger mundur perlahan sambil tetap merekam, suara ${sound} terdengar lebih jelas.`
+
+)}
 
 ${cam}`
 
@@ -323,13 +314,20 @@ ${cam}`
 
 else if(i<scene){
 
-text=`VIDEO SCENE ${i} — CHASE
+text=`VIDEO SCENE ${i} (CHASE)
+Durasi: 6 detik
+Lokasi: ${lokasi}
+Waktu: ${waktu}
 
-The ${hantu} chases the vlogger.
+${buildSession(
 
-The vlogger runs while filming.
+`${hantu} mulai mengejar vlogger. Vlogger berlari sambil memegang kamera.`,
 
-${intensity} horror intensity.
+`Kamera bergoyang hebat saat berlari. Nafas vlogger terdengar cepat.`,
+
+`Suara langkah kaki dan ${sound} terdengar kacau di sekitar.`
+
+)}
 
 ${cam}`
 
@@ -337,17 +335,20 @@ ${cam}`
 
 else{
 
-text=`VIDEO SCENE ${i} — COMEDY CLIMAX
+text=`VIDEO SCENE ${i} (COMEDY CLIMAX)
+Durasi: 6 detik
+Lokasi: ${lokasi}
+Waktu: ${waktu}
 
-The ${hantu} gets very close.
+${buildSession(
 
-The vlogger ${comedy()}.
+`${hantu} hampir menangkap vlogger. Vlogger tiba-tiba berhenti dan terlihat kesal.`,
 
-The ghost becomes scared and runs away.
+`Vlogger ${comedy()}. Ekspresi wajah marah namun lucu.`,
 
-The vlogger chases the ghost.
+`Hantu terlihat ketakutan dan mencoba kabur sementara vlogger mengejar.`
 
-Horror comedy chaotic ending.
+)}
 
 ${cam}`
 
@@ -360,14 +361,6 @@ html+=`<b>Scene ${i}</b>
 <button class="copyBtn" onclick='copyText(\`${text}\`)'>Copy</button>`
 
 }
-
-let tag=hashtags()
-
-all+=tag
-
-html+=`<b>Hashtags</b>
-<div class="output">${tag}</div>
-<button class="copyBtn" onclick='copyText(\`${tag}\`)'>Copy</button>`
 
 html+=`<button class="copyAll" onclick='copyText(\`${all}\`)'>COPY SEMUA PROMPT</button>`
 
