@@ -3,13 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Horror Komedi Prompt Engine PRO</title>
+
+<title>Horror Komedi Prompt Engine</title>
 
 <style>
 
 body{
 font-family:Arial;
-background:#0a0a0a;
+background:#0b0b0b;
 color:white;
 margin:0;
 padding:20px;
@@ -22,7 +23,7 @@ margin:auto;
 
 h1{
 text-align:center;
-color:#ff3c3c;
+color:#ff4040;
 }
 
 .card{
@@ -53,14 +54,14 @@ margin-top:15px;
 padding:12px;
 border:none;
 border-radius:10px;
-background:#ff3c3c;
+background:#ff4040;
 color:white;
 font-weight:bold;
 width:100%;
 }
 
 button:hover{
-background:#ff2020;
+background:#ff2222;
 }
 
 .output{
@@ -103,13 +104,14 @@ border-radius:10px;
 <img id="preview" class="preview"/>
 
 <label>Lokasi</label>
-<input id="lokasi" placeholder="contoh: rumah kosong">
+<input id="lokasi" placeholder="contoh: rumah kosong angker">
 
 <label>Waktu</label>
 <select id="waktu">
 <option>malam hari</option>
 <option>tengah malam</option>
 <option>dini hari berkabut</option>
+<option>sore menjelang malam</option>
 </select>
 
 <label>Jenis Hantu</label>
@@ -150,51 +152,71 @@ border-radius:10px;
 <script>
 
 const preview=document.getElementById("preview")
+
 document.getElementById("photo").onchange=e=>{
 preview.src=URL.createObjectURL(e.target.files[0])
 }
 
 function copyText(text){
 navigator.clipboard.writeText(text)
-alert("Copied")
+alert("Prompt copied")
 }
 
 function random(arr){
 return arr[Math.floor(Math.random()*arr.length)]
 }
 
-function camera(){
+function cameraStyle(){
 
-let cams=[
-"handheld smartphone camera, shaky amateur recording",
+let styles=[
+
+"amateur handheld smartphone camera, shaky recording",
+
 "violent handheld shake while walking",
+
 "panic running camera movement",
-"uneven amateur framing, accidental tilt",
+
+"uneven amateur framing with accidental tilt",
+
 "extreme shaky found footage style"
+
 ]
 
 return `
+
 camera style:
-${random(cams)}
+${random(styles)}
 no stabilizer
 natural hand jitter
+imperfect framing
 raw vlog footage
+
 NOT cinematic
 NOT stabilized
+NOT professional camera
+NOT gimbal
+
 `
 }
 
-function comedy(){
+function comedyAction(){
 
 let actions=[
+
 "throws stones at the ghost's head",
+
 "hits the ghost repeatedly with a wooden stick",
+
 "kicks the ghost while shouting",
+
 "chases the ghost aggressively",
+
 "smacks the ghost's head with random objects"
+
 ]
 
 return random(actions)
+
 }
 
 function generate(){
@@ -211,19 +233,21 @@ result.innerHTML=""
 
 for(let b=1;b<=batch;b++){
 
-let cam=camera()
+let cam=cameraStyle()
+
+let html=`<div class="card"><h3>Batch ${b}</h3>`
 
 let imgPrompt=
 
 `HORROR IMAGE PROMPT
 
-Indonesian vlogger exploring ${lokasi} at ${waktu}.
+A nervous Indonesian vlogger exploring ${lokasi} at ${waktu}.
 
-The vlogger looks nervous while recording a vlog.
+The vlogger cautiously records a vlog while walking slowly.
 
-Dark eerie environment.
+The environment feels eerie and quiet.
 
-No ghost visible yet.
+No ghost or monster visible.
 
 ${intensity} horror atmosphere.
 
@@ -231,53 +255,104 @@ reference character based on uploaded photo.
 
 ${cam}`
 
-let html=`<div class="card"><h3>Batch ${b}</h3>`
-
-html+=`<b>Prompt Gambar</b>
+html+=`<b>Output 1 — Prompt Gambar</b>
 <div class="output">${imgPrompt}</div>
 <button class="copyBtn" onclick='copyText(\`${imgPrompt}\`)'>COPY</button>`
+
 
 for(let i=1;i<=scene;i++){
 
 let text=""
 
-if(i==scene){
+if(i==1){
 
 text=
 
-`VIDEO SCENE ${i} (COMEDY CLIMAX)
+`VIDEO SCENE 1 — EXPLORATION
 
-The ${hantu} suddenly appears clearly.
-
-The vlogger becomes angry and ${comedy()}.
-
-The ghost becomes scared and runs away.
-
-Now the vlogger chases the ghost.
-
-The ghost looks traumatized and terrified.
-
-horror comedy climax.
-
-${cam}`
-
-}else{
-
-text=
-
-`VIDEO SCENE ${i}
+POV vlog recording.
 
 The vlogger explores ${lokasi} at ${waktu}.
 
-Strange noises appear.
+The camera slowly scans the environment.
+
+The atmosphere feels eerie and tense.
+
+Nothing unusual appears yet.
+
+No ghost visible.
+
+${intensity} suspense atmosphere.
+
+${cam}`
+
+}
+
+else if(i==2){
+
+text=
+
+`VIDEO SCENE 2 — GHOST FIRST APPEARANCE
+
+While exploring the location, something strange appears.
 
 The ${hantu} briefly appears in the distance.
 
-The vlogger panics and runs.
+The vlogger notices the figure and becomes frightened.
 
-The ghost begins chasing.
+The ghost slowly approaches.
 
-${intensity} horror atmosphere.
+The atmosphere suddenly becomes very tense.
+
+${intensity} horror intensity.
+
+${cam}`
+
+}
+
+else if(i<scene){
+
+text=
+
+`VIDEO SCENE ${i} — HORROR CHASE
+
+The ${hantu} suddenly chases the vlogger.
+
+The vlogger panics and runs while filming.
+
+The camera shakes violently.
+
+The ghost gets closer.
+
+Very intense horror chase scene.
+
+${intensity} horror tension.
+
+${cam}`
+
+}
+
+else{
+
+text=
+
+`VIDEO SCENE ${i} — HORROR COMEDY CLIMAX
+
+The ${hantu} finally gets very close.
+
+Instead of running away, the vlogger becomes angry.
+
+The vlogger ${comedyAction()}.
+
+The ghost becomes scared and confused.
+
+Now the ghost runs away.
+
+The vlogger chases the ghost while yelling.
+
+The ghost looks traumatized and bullied.
+
+Horror comedy chaotic climax.
 
 ${cam}`
 
